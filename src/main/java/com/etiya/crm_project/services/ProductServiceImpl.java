@@ -2,6 +2,7 @@ package com.etiya.crm_project.services;
 
 import com.etiya.crm_project.entities.Product;
 import com.etiya.crm_project.repositories.ProductRepository;
+import com.etiya.crm_project.rules.ProductBusinessRules;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,16 +12,12 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements ProductService{
-
     private ProductRepository productRepository;
+    private ProductBusinessRules productBusinessRules;
     @Override
     public Product add(Product product) {
 
-        Optional<Product> productCheck = productRepository.findByNameIgnoreCase(product.getName());
-
-        if(productCheck.isPresent()){
-            throw new RuntimeException("Bu ürün zaten kayıtlı.");
-        }
+        productBusinessRules.productNameCanNotBeDuplicated(product.getName());
 
         Product createdProduct = productRepository.save(product);
         return createdProduct;
@@ -40,4 +37,6 @@ public class ProductServiceImpl implements ProductService{
     public void delete(int id) {
          productRepository.deleteById(id);
     }
+
+
 }
